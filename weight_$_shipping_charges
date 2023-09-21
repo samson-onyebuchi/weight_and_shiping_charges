@@ -1,0 +1,25 @@
+def calculate_total_charges(weight, shipping_process):
+    express_shipping_rate_per_kg = 11.80
+    standard_shipping_rate_per_kg = 6.80
+    total_charges = 0
+
+    if weight < 1:
+        return "Error: Weight should be greater than or equal to 1"
+
+    if shipping_process.lower() not in ["standard", "express"]:
+        return f"Error: Invalid shipping process '{shipping_process}'. Please enter 'standard' or 'express'."
+
+    if shipping_process.lower() == "standard":
+        total_charges = weight * standard_shipping_rate_per_kg
+    elif shipping_process.lower() == "express":
+        total_charges = weight * express_shipping_rate_per_kg
+
+    return f"Total charges for the product: £{total_charges:.2f}"
+
+
+
+weight_input = float(input("Enter the weight (in kg): "))
+shipping_process_input = input("Enter the shipping process (standard/express): ")
+
+result = calculate_total_charges(weight_input, shipping_process_input)
+print(result)
