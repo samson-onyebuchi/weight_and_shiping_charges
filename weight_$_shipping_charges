@@ -1,25 +1,50 @@
-def calculate_total_charges(weight, shipping_process):
-    express_shipping_rate_per_kg = 11.80
-    standard_shipping_rate_per_kg = 6.80
-    total_charges = 0
+def calculate_shipping_cost(weights, shipping_process):
+    valid_shipping_processes = ['Express', 'Standard']
+    if shipping_process not in valid_shipping_processes:
+        return "Invalid shipping process. Valid options: Express, Standard"
 
-    if weight < 1:
-        return "Error: Weight should be greater than or equal to 1"
+    if not weights:
+        return "Payload is empty."
 
-    if shipping_process.lower() not in ["standard", "express"]:
-        return f"Error: Invalid shipping process '{shipping_process}'. Please enter 'standard' or 'express'."
+    total_weight = 0
+    total_cost = 0  
 
-    if shipping_process.lower() == "standard":
-        total_charges = weight * standard_shipping_rate_per_kg
-    elif shipping_process.lower() == "express":
-        total_charges = weight * express_shipping_rate_per_kg
+    try:
+        # Calculate total weight and shipping cost
+        for item in weights:
+            weight = float(item["weight"]) * int(item["quantity"])
+            item_cost = weight * float(item["naira_price"])
+            total_weight += weight
+            total_cost += item_cost
 
-    return f"Total charges for the product: £{total_charges:.2f}"
+        return total_weight, total_cost
 
+    except ValueError as e:
+        return f"Error: {str(e)}. Please ensure weight, quantity, and naira_price are valid numbers."
 
+# Function to format currency
+def format_currency(amount):
+    return "₦{:,.2f}".format(float(amount))  # Format naira as currency
 
-weight_input = float(input("Enter the weight (in kg): "))
-shipping_process_input = input("Enter the shipping process (standard/express): ")
+# Wrapper function to return the calculate_shipping_cost function and the result
+def calculate_and_return(weights, shipping_process):
+    shipping_function = calculate_shipping_cost
+    result = shipping_function(weights, shipping_process)
+    return shipping_function, result
 
-result = calculate_total_charges(weight_input, shipping_process_input)
-print(result)
+# Example usage
+weights = [
+    {"weight": "1", "quantity": "2", "naira_price": "23800"},
+    {"weight": "4", "quantity": "1", "naira_price": "3200"},
+    {"weight": "3", "quantity": "5", "naira_price": "2100"}
+]
+shipping_process = 'Standard'  
+
+shipping_function, result = calculate_and_return(weights, shipping_process)
+if isinstance(result, tuple):
+    total_weight, shipping_cost = result
+    print("Total Weight:", total_weight, "kg")
+    print("Total Shipping Cost:", format_currency(shipping_cost))
+else:
+    print(result)
+
